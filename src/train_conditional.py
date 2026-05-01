@@ -7,13 +7,13 @@ from torch.optim import Adam
 from tqdm import tqdm
 from audio_diffusion_pytorch import DiffusionModel, UNetV0, VDiffusion, VSampler
 sys.path.append("/project/baby-cry-diffusion/src")
-from dataset import get_dataloader, N_SAMPLES, CLASSES, CLASS2IDX
+from dataset import get_dataloader, get_balanced_dataloader, N_SAMPLES, CLASSES, CLASS2IDX
 
 DATA_DIR    = "/project/baby-cry-diffusion/donateacry-corpus/donateacry_corpus_cleaned_and_updated_data"
-OUT_DIR     = "/project/baby-cry-diffusion/outputs/conditional"
+OUT_DIR = "/project/baby-cry-diffusion/outputs/conditional_balanced"
 BATCH_SIZE  = 8
 LR          = 1e-4
-EPOCHS      = 50
+EPOCHS      = 100
 SAVE_EVERY  = 10
 GEN_EVERY   = 10
 NUM_STEPS   = 50
@@ -44,7 +44,8 @@ model = DiffusionModel(
 total_params = sum(p.numel() for p in model.parameters()) + sum(p.numel() for p in class_embedding.parameters())
 print(f"Model parameters: {total_params:,}")
 
-loader = get_dataloader(DATA_DIR, batch_size=BATCH_SIZE)
+from dataset import get_balanced_dataloader
+loader = get_balanced_dataloader(DATA_DIR, batch_size=BATCH_SIZE)
 optimizer = Adam(list(model.parameters()) + list(class_embedding.parameters()), lr=LR)
 
 def generate_per_class(epoch, n=2):

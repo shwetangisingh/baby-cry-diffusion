@@ -57,6 +57,15 @@ class BabyCryDataset(Dataset):
 def get_dataloader(data_dir, batch_size=16, shuffle=True):
     ds = BabyCryDataset(data_dir)
     return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=2)
+def get_balanced_dataloader(data_dir, batch_size=16):
+    from torch.utils.data import WeightedRandomSampler
+    ds = BabyCryDataset(data_dir)
+    class_counts = [0] * len(CLASSES)
+    for _, y in ds.samples:
+        class_counts[y] += 1
+    weights = [1.0 / class_counts[y] for _, y in ds.samples]
+    sampler = WeightedRandomSampler(weights, num_samples=len(ds), replacement=True)
+    return DataLoader(ds, batch_size=batch_size, sampler=sampler, num_workers=2)  
 
 if __name__ == "__main__":
     data_dir = "/project/baby-cry-diffusion/donateacry-corpus/donateacry_corpus_cleaned_and_updated_data"
