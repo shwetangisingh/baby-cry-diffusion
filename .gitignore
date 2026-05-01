@@ -1,0 +1,5 @@
+donateacry-corpus/
+outputs/*.pt
+__pycache__/
+*.pyc
+.venv/
