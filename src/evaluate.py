@@ -83,7 +83,7 @@ def evaluate_generated(clf, n_per_class=20):
     with torch.no_grad():
         for cls_name, cls_idx in CLASS2IDX.items():
             y = torch.tensor([cls_idx] * n_per_class).to(DEVICE)
-            emb = class_embedding(y).unsqueeze(1)
+            emb = class_embedding(y).unsqueeze(1) * 2.0
             noise = torch.randn(n_per_class, 1, N_SAMPLES).to(DEVICE)
             samples = model.sample(noise, embedding=emb, num_steps=NUM_STEPS)
             logits = clf(samples)
